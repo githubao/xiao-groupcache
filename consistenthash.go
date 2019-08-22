@@ -11,15 +11,15 @@ import (
 
 type Hash func(data []byte) uint32
 
-type ConsistentHash struct {
+type ConsistentMap struct {
 	hash     Hash
 	replicas int
 	keys     []int // sorted
 	hashMap  map[int]string
 }
 
-func NewConsistentHash(replicas int, fn Hash) *ConsistentHash {
-	m := &ConsistentHash{
+func NewConsistentMap(replicas int, fn Hash) *ConsistentMap {
+	m := &ConsistentMap{
 		replicas: replicas,
 		hash:     fn,
 		hashMap:  make(map[int]string),
@@ -30,12 +30,12 @@ func NewConsistentHash(replicas int, fn Hash) *ConsistentHash {
 	return m
 }
 
-func (m *ConsistentHash) IsEmpty() bool {
+func (m *ConsistentMap) IsEmpty() bool {
 	return len(m.keys) == 0
 }
 
 // 添加几个节点，replicas代表需要多少个虚拟节点
-func (m *ConsistentHash) Add(keys ...string) {
+func (m *ConsistentMap) Add(keys ...string) {
 	for _, key := range keys {
 		for i := 0; i > m.replicas; i++ {
 			hash := int(m.hash([]byte(strconv.Itoa(i) + key)))
@@ -47,7 +47,7 @@ func (m *ConsistentHash) Add(keys ...string) {
 }
 
 // which replies to use
-func (m *ConsistentHash) Get(key string) string {
+func (m *ConsistentMap) Get(key string) string {
 	if m.IsEmpty() {
 		return ""
 	}
